@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mundo das Copas</title>
+<style>
+:root{--bg:#07172d;--panel:#102746;--panel2:#163354;--gold:#e8c66a;--text:#f5f7fb;--muted:#a9bad0;--line:#355477;--green:#66d6a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#16395d 0,#07172d 58%);color:var(--text);font:15px/1.45 system-ui,Segoe UI,Arial}
+header{padding:26px clamp(16px,4vw,54px) 18px;border-bottom:1px solid #294666;background:#061326cc}
+.kicker{color:var(--gold);font-size:11px;letter-spacing:.18em;font-weight:800}h1{margin:4px 0;font-size:clamp(28px,4vw,44px);letter-spacing:.04em}header p{color:var(--muted);margin:4px 0 0}
+main{padding:22px clamp(14px,4vw,54px) 50px;max-width:1500px;margin:auto}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+select,input,button{font:inherit;border-radius:10px;border:1px solid var(--line);padding:10px 12px;background:#0b2039;color:var(--text)}
+select{min-width:240px}button{cursor:pointer;background:#18395c}button.primary{background:var(--gold);color:#14233a;border-color:var(--gold);font-weight:800}
+button:hover{filter:brightness(1.12)}.status{margin-left:auto;color:var(--green);font-size:13px}
+.identity{display:flex;align-items:center;gap:15px;margin-bottom:12px}.emblem{width:68px;height:68px;border-radius:18px;display:grid;place-items:center;font-size:31px;font-weight:900;color:white;border:1px solid #ffffff55;box-shadow:0 8px 22px #0004;background:var(--accent,#c9a64b)}.identity h2{font-size:clamp(22px,3vw,30px);margin:0}.identity .muted{font-size:13px}.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin:14px 0 20px}
+.card{background:linear-gradient(145deg,#123052,#0d2340);border:1px solid #294969;border-radius:16px;padding:17px}
+.card h2{margin:0 0 8px;font-size:18px}.muted{color:var(--muted)}.stats{display:flex;gap:20px;flex-wrap:wrap}.stat strong{display:block;font-size:25px;color:var(--gold)}
+.phasebar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.phasebar button{font-size:13px}.phasebar button.active{background:var(--gold);color:#14233a;border-color:var(--gold);font-weight:800}
+.bracket{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:14px;overflow-x:auto;padding-bottom:12px}
+.round{min-width:220px}.round h3{color:var(--gold);font-size:13px;letter-spacing:.12em;margin:0 0 12px}
+.match{background:#0b2039;border:1px solid #2a496a;border-radius:12px;padding:12px;margin-bottom:14px;box-shadow:0 8px 22px #0002}
+.team{display:flex;align-items:center;gap:8px;padding:5px 0}.team input{width:42px;padding:5px;text-align:center;margin-left:auto}
+.team .name{flex:1;min-width:0}.team.winner .name{color:var(--green);font-weight:800}
+.match small{color:var(--muted)}.match-actions{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:6px}.match-actions button{font-size:12px;padding:6px 9px}
+.empty{color:#7890aa;font-style:italic;padding:12px 0}.notice{border-left:3px solid var(--gold);padding:10px 13px;color:var(--muted);background:#0c2038;border-radius:7px;margin-top:18px;font-size:13px}
+footer{color:#7890aa;font-size:12px;margin-top:24px}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.status{margin-left:0}.bracket{grid-template-columns:repeat(4,240px)}}
+</style>
+</head>
+<body>
+<header><div class="kicker">CENTRAL DE TORNEIOS • FUTEBOL MUNDIAL</div><h1>🏆 MUNDO DAS COPAS</h1><p>Competições, resultados, chaves e classificados em um só lugar.</p></header>
+<main>
+<div class="toolbar">
+<select id="competition"></select>
+<select id="season"><option>2026</option><option>2025</option><option>2027</option></select>
+<button id="reset">Reiniciar chave demonstrativa</button>
+<button class="primary" id="export">Exportar dados</button>
+<span class="status" id="saveStatus">● Salvo neste navegador</span>
+</div>
+<div class="hero">
+ <section class="card"><div class="identity"><div class="emblem" id="emblem">🏆</div><div><h2 id="compTitle">Competição</h2><div class="muted" id="compDesc">Modelo inicial de chave eliminatória</div></div></div><div class="stats" style="margin-top:16px"><div class="stat"><strong id="gamesCount">0</strong><span class="muted">confrontos</span></div><div class="stat"><strong id="doneCount">0</strong><span class="muted">finalizados</span></div><div class="stat"><strong id="teamsCount">0</strong><span class="muted">equipes</span></div></div></section>
+ <section class="card"><h2>Como funciona</h2><div class="muted">Edite nomes e placares no protótipo. Ao finalizar um confronto, o vencedor avança automaticamente para a próxima fase. Os dados ficam salvos neste navegador.</div></section>
+</div>
+<div class="phasebar" id="phasebar"></div>
+<div class="bracket" id="bracket"></div>
+
+<section class="card" style="margin-top:18px" id="agenda">
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+  <div><div class="kicker">CALENDÁRIO GERAL</div><h2 style="margin:4px 0">📅 Próximos jogos</h2><div class="muted">Agenda unificada das 13 competições • janela mínima de 15 dias</div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><select id="agendaFilter"><option value="all">Todas as competições</option></select><select id="agendaWindow"><option value="15" selected>Próximos 15 dias</option><option value="30">Próximos 30 dias</option><option value="60">Próximos 60 dias</option></select></div>
+ </div>
+ <div id="agendaList" style="margin-top:16px">
+  <div class="empty">A agenda será preenchida automaticamente quando conectarmos a fonte de resultados. Este protótipo ainda não consulta jogos reais.</div>
+ </div>
+ <div class="notice">A agenda final mostrará data e horário de Brasília, competição, escudos, estádio quando disponível e status da partida. Os filtros permitirão ver todos os jogos ou apenas uma competição.</div>
+</section>
+
+<div class="notice"><b>Importante:</b> esta é a primeira versão demonstrativa, com atualização manual e avanço automático. A sincronização real de placares exige conectar uma API de futebol, configurar uma chave de acesso e hospedar um serviço de atualização. Os torneios ainda não estão ligados a resultados ao vivo.</div>
+<footer>Protótipo Mundo das Copas • Os dados inseridos são armazenados localmente neste navegador.</footer>
+</main>
+<script>
+const names=["Copa do Brasil","Libertadores","Sul-Americana","Champions League","Europa League","Conference League","Eurocopa","Copa do Mundo","Mundial de Clubes","Copa América","Copa da Itália","Copa da Inglaterra","Nations League"];
+const demo={
+"Copa do Brasil":[["Flamengo","Palmeiras"],["Corinthians","São Paulo"],["Grêmio","Atlético-MG"],["Fluminense","Botafogo"]],
+"Libertadores":[["Flamengo","River Plate"],["Palmeiras","Boca Juniors"],["São Paulo","Peñarol"],["Atlético-MG","Nacional"]],
+"Sul-Americana":[["Athletico-PR","Lanús"],["Internacional","Racing"],["Corinthians","Independiente"],["Fortaleza","América de Cali"]],
+"Champions League":[["Real Madrid","Manchester City"],["Bayern","PSG"],["Barcelona","Arsenal"],["Liverpool","Inter"]],
+"Europa League":[["Roma","Tottenham"],["Porto","Lyon"],["Ajax","Sevilla"],["Manchester United","Fenerbahçe"]],
+"Conference League":[["Chelsea","Fiorentina"],["Betis","Lille"],["PAOK","Rapid Wien"],["Basel","AZ"]],
+"Eurocopa":[["Espanha","Alemanha"],["França","Portugal"],["Inglaterra","Itália"],["Holanda","Bélgica"]],
+"Copa do Mundo":[["Brasil","Argentina"],["França","Alemanha"],["Espanha","Portugal"],["Inglaterra","Uruguai"]],
+"Mundial de Clubes":[["Real Madrid","Flamengo"],["Manchester City","Boca Juniors"],["PSG","Palmeiras"],["Al Ahly","Inter Miami"]],
+"Copa América":[["Argentina","Brasil"],["Uruguai","Colômbia"],["Chile","Equador"],["México","Estados Unidos"]],
+"Copa da Itália":[["Juventus","Inter"],["Milan","Roma"],["Napoli","Lazio"],["Atalanta","Fiorentina"]],
+"Copa da Inglaterra":[["Arsenal","Manchester City"],["Liverpool","Chelsea"],["Manchester United","Tottenham"],["Newcastle","Aston Villa"]],
+"Nations League":[["Portugal","Espanha"],["França","Alemanha"],["Itália","Holanda"],["Croácia","Inglaterra"]]
+};
+const brand={
+"Copa do Brasil":["🇧🇷","#168b58","CB"],"Libertadores":["🏆","#d5a83d","LIB"],"Sul-Americana":["🌎","#d97732","SUD"],
+"Champions League":["⭐","#2765b8","UCL"],"Europa League":["🟠","#df762c","UEL"],"Conference League":["🟢","#348b68","UECL"],
+"Eurocopa":["🏟️","#2779ad","EURO"],"Copa do Mundo":["🌐","#168c83","FIFA"],"Mundial de Clubes":["🌍","#3979b9","CWC"],
+"Copa América":["🏆","#2c8a59","CA"],"Copa da Itália":["🇮🇹","#168b58","CI"],"Copa da Inglaterra":["🏴","#9b2638","FAC"],"Nations League":["⚔️","#6b58b8","UNL"]
+};
+let state=JSON.parse(localStorage.getItem("mundodascopas")||"{}"), current=names[0],round=0;
+function fresh(n){let pairs=demo[n];return {rounds:[pairs.map((p,i)=>({teams:p,scores:["",""],done:false,id:"r0m"+i})),[0,1].map(i=>({teams:["A definir","A definir"],scores:["",""],done:false,id:"r1m"+i})),[{teams:["A definir","A definir"],scores:["",""],done:false,id:"final"}]]}}
+function data(){if(!state[current])state[current]=fresh(current);return state[current]}
+function save(){localStorage.setItem("mundodascopas",JSON.stringify(state));document.getElementById("saveStatus").textContent="● Salvo neste navegador"}
+function render(){
+ let d=data();let b=brand[current]||["🏆","#c9a64b","FC"];document.getElementById("emblem").textContent=b[0];document.getElementById("emblem").style.setProperty("--accent",b[1]);document.getElementById("compTitle").textContent=current;document.getElementById("compDesc").textContent="Temporada "+document.getElementById("season").value+" • Identidade visual própria • "+b[2];
+ let total=d.rounds.reduce((a,r)=>a+r.length,0),done=d.rounds.flat().filter(m=>m.done).length,teams=d.rounds[0].length*2;
+ document.getElementById("gamesCount").textContent=total;document.getElementById("doneCount").textContent=done;document.getElementById("teamsCount").textContent=teams;
+ document.getElementById("phasebar").innerHTML=["Quartas de final","Semifinais","Final"].map((x,i)=>`<button class="${round===i?'active':''}" data-r="${i}">${x}</button>`).join("");
+ document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{round=+b.dataset.r;render()});
+ const labels=["Quartas de final","Semifinais","Final"];
+ document.getElementById("bracket").innerHTML=d.rounds.map((r,ri)=>`<section class="round"><h3>${labels[ri]}</h3>${r.map((m,mi)=>matchHTML(m,ri,mi)).join("")}</section>`).join("");
+ d.rounds.forEach((r,ri)=>r.forEach((m,mi)=>{[0,1].forEach(t=>{let el=document.getElementById(`n-${ri}-${mi}-${t}`);el.onchange=e=>{m.teams[t]=e.target.value;save();render()};let sc=document.getElementById(`s-${ri}-${mi}-${t}`);sc.onchange=e=>{m.scores[t]=e.target.value; m.done=false;save();render()}});document.getElementById(`finish-${ri}-${mi}`).onclick=()=>finish(ri,mi)}));
+}
+function matchHTML(m,ri,mi){return `<div class="match"><small>Jogo ${mi+1}</small>${m.teams.map((t,i)=>`<div class="team ${m.done&&m.winner===i?'winner':''}"><input aria-label="Equipe" id="n-${ri}-${mi}-${i}" value="${esc(t)}"><input type="number" min="0" id="s-${ri}-${mi}-${i}" value="${m.scores[i]}" placeholder="–"></div>`).join("")}<div class="match-actions"><small>${m.done?"Finalizado":"Placar / resultado"}</small><button id="finish-${ri}-${mi}">Confirmar</button></div></div>`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function finish(ri,mi){let d=data(),m=d.rounds[ri][mi];if(!m.teams[0]||!m.teams[1]||m.teams.includes("A definir")){alert("Preencha os dois clubes antes de confirmar.");return}if(m.scores.some(x=>x==="")){alert("Informe os dois placares.");return}let a=+m.scores[0],b=+m.scores[1];if(a===b){alert("Empate: em mata-mata, informe o vencedor após os critérios de desempate. Nesta versão, ajuste o placar para refletir o classificado.");return}m.winner=a>b?0:1;m.done=true;if(ri<2){let next=d.rounds[ri+1][Math.floor(mi/2)];let slot=mi%2;next.teams[slot]=m.teams[m.winner];next.scores=["",""];next.done=false;delete next.winner}save();render()}
+function reset(){if(confirm("Apagar os dados desta competição e restaurar a chave demonstrativa?")){delete state[current];round=0;save();render()}}
+const sel=document.getElementById("competition");names.forEach(n=>sel.add(new Option(n,n)));sel.onchange=()=>{current=sel.value;round=0;render()};
+document.getElementById("reset").onclick=reset;
+document.getElementById("export").onclick=()=>{let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="mundo-das-copas-dados.json";a.click();URL.revokeObjectURL(a.href)};
+names.forEach(n=>document.getElementById("agendaFilter").add(new Option(n,n)));
+document.getElementById("agendaFilter").onchange=()=>{document.getElementById("agendaList").innerHTML='<div class="empty">Filtro selecionado: '+esc(document.getElementById("agendaFilter").selectedOptions[0].text)+'. Os jogos reais aparecerão após a integração da API.</div>'};
+document.getElementById("agendaWindow").onchange=()=>{document.getElementById("agendaList").innerHTML='<div class="empty">Período selecionado: próximos '+document.getElementById("agendaWindow").value+' dias. A lista será carregada pela API na próxima etapa.</div>'};
+render();
+</script>
+</body></html>
